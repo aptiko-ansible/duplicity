@@ -1,0 +1,11 @@
+---
+galaxy_info:
+  author: Antonis Christofides
+  description: Ansible role for backing up a server
+  license: GPLv3
+  platforms:
+  - name: Debian
+    versions:
+    - jessie
+
+dependencies: {}

@@ -1,0 +1,8 @@
+---
+duplicity_environment: {}
+duplicity_verbosity: 4
+duplicity_full_if_older_than: 3M
+duplicity_remove_older_than: 2Y
+duplicity_remove_all_inc_of_but_n_full: 2
+duplicity_extra_parms: ""
+duplicity_when_to_run: 0 4 * * *
