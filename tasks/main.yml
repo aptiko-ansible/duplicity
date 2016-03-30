@@ -7,13 +7,15 @@
 - name: Install duplicity
   apt: name=duplicity
 
-# We install paramiko from pip, because the Debian version has some
+# We install paramiko from pip, because the Jessie version has some
 # problems; notably later parmiko versions have improved on
-# https://github.com/paramiko/paramiko/issues/17.
+# https://github.com/paramiko/paramiko/issues/17; in addition, older
+# paramiko versions say "no acceptable kex algorithm" when they try to
+# connect to Jessie servers.
 - name: Ensure paramiko deb is uninstalled
   apt: name=python-paramiko state=absent
 - name: Install paramiko from pip
-  pip: name=paramiko version=1.12.1
+  pip: name=paramiko version=1.16.0
 
 # Avoid the "no module gio" warning
 - name: Install python-gobject
