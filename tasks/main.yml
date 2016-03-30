@@ -22,36 +22,42 @@
 # Install gpg key
 - name: Extract gpg key email from gpg public key
   shell: >
-    echo '{{ gpg_pub_key }}' | gpg --with-fingerprint | head -n 1 |
+    echo '{{ gpg_pub_key|default("") }}' | gpg --with-fingerprint | head -n 1 |
     awk '{ print $NF }' | tr -d '<>\n'
   register: get_gpg_key_email
   changed_when: False
   always_run: yes
+
 - name: Extract gpg key fingerprint from gpg public key
   shell: >
-    echo '{{ gpg_pub_key }}' | gpg --with-fingerprint | grep fingerprint |
+    echo '{{ gpg_pub_key|default("") }}' | gpg --with-fingerprint | grep fingerprint |
     awk -F= '{ print $2 }' | sed 's/ //g' | tr -d '\n'
   register: get_gpg_key_fingerprint
   changed_when: False
   always_run: yes
+
 - name: Check if private gpg key is installed
   command: gpg --list-secret-keys {{ get_gpg_key_email.stdout }}
   register: gpg_priv_key_installed
   ignore_errors: True
   changed_when: False
   always_run: yes
+
 - name: Import private gpg key
   shell: echo '{{ gpg_priv_key }}' | gpg --import -
-  when: "gpg_priv_key_installed.rc != 0"
+  when: "gpg_priv_key_installed.rc != 0 and not duplicity_deactivate"
+
 - name: Check if public gpg key is installed
   command: gpg --list-keys {{ get_gpg_key_email.stdout }}
   register: gpg_pub_key_installed
   ignore_errors: True
   changed_when: False
   always_run: yes
+
 - name: Import public gpg key
   shell: echo '{{ gpg_pub_key }}' | gpg --import -
-  when: "gpg_pub_key_installed.rc != 0"
+  when: "gpg_pub_key_installed.rc != 0 and not duplicity_deactivate"
+
 - name: Check if public gpg key is trusted
   shell: >
     gpg --export-ownertrust|grep {{ get_gpg_key_fingerprint.stdout }}|
@@ -60,23 +66,32 @@
   ignore_errors: True
   changed_when: False
   always_run: yes
+
 - name: Trust public gpg key
   shell: >
     echo "{{ get_gpg_key_fingerprint.stdout }}:6:" | gpg --import-ownertrust
-  when: "gpg_pub_key_is_trusted.rc != 0"
+  when: "not duplicity_deactivate and gpg_pub_key_is_trusted.rc != 0"
 
 # Create scripts and set them to run
 - name: Create /etc/duplicity
   file: dest=/etc/duplicity state=directory
+
 - name: Create /etc/duplicity/includes_excludes
   file: dest=/etc/duplicity/includes_excludes state=directory
+
 - name: Create /etc/duplicity/pre
   file: dest=/etc/duplicity/pre state=directory
+
 - name: Create /etc/duplicity/post
   file: dest=/etc/duplicity/post state=directory
+
 - name: Specify base duplicity excludes
   copy: src=base_excludes dest=/etc/duplicity/includes_excludes/base
+
 - name: Install custom_backup script
   template: src=custom_backup dest=/usr/local/sbin/custom_backup mode=700
+  when: not duplicity_deactivate
+
 - name: Install cron job
   template: src=cronjob dest=/etc/cron.d/duplicity mode=600
+  when: not duplicity_deactivate

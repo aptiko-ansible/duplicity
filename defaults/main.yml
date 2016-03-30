@@ -1,4 +1,5 @@
 ---
+duplicity_deactivate: false
 duplicity_environment: {}
 duplicity_verbosity: 4
 duplicity_full_if_older_than: 3M

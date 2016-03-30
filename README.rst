@@ -106,6 +106,9 @@ Variables
 - ``gpg_priv_key``, ``gpg_pub_key``: The GPG keys; they must be the
   full contents of the ASCII armored files (``.asc``).  These keys are
   installed in GPG and marked as trusted.
+- ``duplicity_deactivate``: Default false. Set to true in order to
+  deactivate backup of a server. This may be useful when setting up
+  backup servers themselves.
 - ``duplicity_target``: No default.
 - ``duplicity_environment``: A dictionary of environment variable names
   mapping to values; this can be useful in order to setup credentials
