@@ -1,4 +1,6 @@
 ---
+dependencies: []
+
 galaxy_info:
   author: Antonis Christofides
   description: Ansible role for backing up a server
@@ -7,5 +9,3 @@ galaxy_info:
   - name: Debian
     versions:
     - jessie
-
-dependencies: {}
