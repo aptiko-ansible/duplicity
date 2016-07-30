@@ -1,8 +1,12 @@
-# We want to install python-crypto directly and not as a dependency,
-# because we do smart things with paramiko installation below and it
+# We install python-crypto and python-ecdsa directly and not as dependencies,
+# because we do smart things with paramiko installation below and they
 # might be accidentally autoremoved.
+
 - name: Install python-crypto
   apt: name=python-crypto
+
+- name: Install python-ecdsa
+  apt: name=python-ecdsa
 
 - name: Install duplicity
   apt: name=duplicity
