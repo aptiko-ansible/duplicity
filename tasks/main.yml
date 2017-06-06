@@ -32,7 +32,7 @@
     awk '{ print $NF }' | tr -d '<>\n'
   register: get_gpg_key_email
   changed_when: False
-  always_run: yes
+  check_mode: no
 
 - name: Extract gpg key fingerprint from gpg public key
   shell: >
@@ -40,14 +40,14 @@
     awk -F= '{ print $2 }' | sed 's/ //g' | tr -d '\n'
   register: get_gpg_key_fingerprint
   changed_when: False
-  always_run: yes
+  check_mode: no
 
 - name: Check if private gpg key is installed
   command: gpg --list-secret-keys {{ get_gpg_key_email.stdout }}
   register: gpg_priv_key_installed
   ignore_errors: True
   changed_when: False
-  always_run: yes
+  check_mode: no
 
 - name: Import private gpg key
   shell: echo '{{ gpg_priv_key }}' | gpg --import -
@@ -58,7 +58,7 @@
   register: gpg_pub_key_installed
   ignore_errors: True
   changed_when: False
-  always_run: yes
+  check_mode: no
 
 - name: Import public gpg key
   shell: echo '{{ gpg_pub_key }}' | gpg --import -
@@ -71,7 +71,7 @@
   register: gpg_pub_key_is_trusted
   ignore_errors: True
   changed_when: False
-  always_run: yes
+  check_mode: no
 
 - name: Trust public gpg key
   shell: >
